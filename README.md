@@ -1,69 +1,99 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# 📄 PDF Generator
 
-Currently, two official plugins are available:
+Projeto em **React + Vite** para geração e download de arquivos PDF a partir de componentes da aplicação.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Tecnologias Utilizadas
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+* [React](https://reactjs.org/)
+* [Vite](https://vitejs.dev/)
+* [html2canvas](https://github.com/niklasvh/html2canvas)
+* [jsPDF](https://github.com/parallax/jsPDF)
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## ⚙️ Requisitos
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+* Node.js **>= 20.9.0** ou **>= 18.18.0**
+* npm **>= 9**
+
+---
+
+Instale as dependências:
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## ▶️ Rodando o projeto em desenvolvimento
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Abra no navegador:
+👉 [http://localhost:5173](http://localhost:5173)
+
+---
+
+## 🖨️ Como funciona a geração de PDF
+
+1. O componente é renderizado na tela.
+2. A biblioteca **html2canvas** captura o conteúdo como imagem.
+3. O **jsPDF** gera um arquivo PDF a partir dessa imagem.
+4. O usuário pode fazer download clicando em um botão.
+
+Exemplo de uso:
+
+```tsx
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import React from "react";
+
+export default function Invoice() {
+  const printRef = React.useRef(null);
+
+  const handleDownloadPdf = async () => {
+    const element = printRef.current;
+    if (!element) return;
+
+    const canvas = await html2canvas(element);
+    const data = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    pdf.addImage(data, "PNG", 0, 0, 210, 297); // A4 size
+    pdf.save("documento.pdf");
+  };
+
+  return (
+    <div>
+      <div ref={printRef}>
+        <h1>Meu Documento</h1>
+        <p>Conteúdo que será exportado em PDF.</p>
+      </div>
+      <button onClick={handleDownloadPdf}>Baixar PDF</button>
+    </div>
+  );
+}
+```
+
+---
+
+## 📂 Estrutura do Projeto
+
+```
+pdf-generator/
+│── src/
+│   ├── components/   # Componentes reutilizáveis
+│   ├── App.tsx       # Componente principal
+│   └── main.tsx      # Ponto de entrada
+│── index.html
+│── package.json
+│── vite.config.ts
+│── README.md
+```
+
